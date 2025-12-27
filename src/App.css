@@ -1,0 +1,6 @@
+/* App-specific styles if needed, mostly handled by index.css */
+.main-content {
+  padding-top: 100px;
+  /* Space for fixed navbar */
+  min-height: 100vh;
+}
