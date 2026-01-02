@@ -157,7 +157,7 @@ const Hero = () => {
                                     animate={{ opacity: 1, scale: 1 }}
                                     transition={{ delay: 1.5, type: "spring" }}
                                 >
-                                    5<span className="text-3xl align-top text-accent-green">+</span>
+                                    2.5<span className="text-3xl align-top text-accent-green ml-1">Yrs</span>
                                 </motion.span>
                                 <span className="text-[10px] text-stone-500 font-mono uppercase tracking-widest font-semibold mt-2 block">Years Experience</span>
                             </div>

@@ -1,7 +1,7 @@
 import { useParams, Link } from 'react-router-dom';
 import { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
-import { ArrowLeft } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { ArrowLeft, FileText, CheckCircle2, ShieldAlert, ArrowRightLeft, BarChart3, Wallet } from 'lucide-react';
 import { projectsData } from '../data/projects';
 import { useLanguage } from '../context/LanguageContext'; // Optional if we translate later
 
@@ -9,6 +9,7 @@ const ProjectDetail = () => {
     const { id } = useParams();
     const project = projectsData.find(p => p.id === id);
     const [selectedImage, setSelectedImage] = useState(0);
+    const [activeTab, setActiveTab] = useState('overview');
 
     // Auto-slideshow
     useEffect(() => {
@@ -133,211 +134,271 @@ const ProjectDetail = () => {
                 </div>
 
                 {/* Case Study Content */}
-                <div className="grid md:grid-cols-12 gap-12">
-                    <div className="md:col-span-4">
-                        <div className="sticky top-32">
-                            <h3 className="text-2xl font-display font-bold text-text-primary mb-4">Overview</h3>
-                            <p className="text-text-secondary text-sm leading-relaxed mb-6">
-                                A detailed look into the problem, my systematic approach to the solution, and the measurable impact created by this project.
-                            </p>
-                            {/* Live Demo Removed */}
+
+                {/* PRD Section */}
+                <div className="border border-border/50 rounded-2xl bg-bg-card overflow-hidden shadow-sm">
+                    {/* PRD Header */}
+                    <div className="bg-bg-secondary/50 border-b border-border/50 p-6 flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 rounded-lg bg-accent-blue/10 flex items-center justify-center text-accent-blue">
+                                <FileText size={20} />
+                            </div>
+                            <div>
+                                <h2 className="text-lg font-bold text-text-primary">Product Requirement Document</h2>
+                                <p className="text-xs text-text-muted font-mono uppercase tracking-wider">Internal Reference: {project.id.toUpperCase()}-V1.0</p>
+                            </div>
+                        </div>
+                        <div className="hidden md:flex gap-2">
+                            <span className="px-2 py-1 rounded bg-green-500/10 text-green-500 text-xs font-bold border border-green-500/20">APPROVED</span>
+                            <span className="px-2 py-1 rounded bg-bg-primary border border-border text-text-secondary text-xs">Public Access</span>
                         </div>
                     </div>
 
-                    <div className="md:col-span-8 space-y-16">
-                        <section>
-                            <h2 className="text-2xl font-bold text-text-primary mb-4 flex items-center gap-3">
-                                <span className="w-8 h-8 rounded-full bg-accent-pink/10 text-accent-pink flex items-center justify-center text-sm font-bold">1</span>
-                                The Challenge
-                            </h2>
-                            <div className="prose prose-lg dark:prose-invert text-text-secondary">
-                                <p className="leading-relaxed mb-6">
-                                    {project.problem}
-                                </p>
-                                {/* Rich Problem Map */}
-                                {project.problemMap && (
-                                    <div className="grid gap-4 mt-6">
-                                        {project.problemMap.map((item, idx) => (
-                                            <div key={idx} className="bg-bg-secondary/50 border border-border/50 rounded-xl p-4 hover:border-accent-pink/50 transition-colors">
-                                                <h4 className="font-bold text-text-primary mb-1">{item.problem}</h4>
-                                                <p className="text-sm text-text-muted italic mb-3">"{item.context}"</p>
-                                                <div className="flex items-center gap-2 text-sm text-accent-pink">
-                                                    <span className="font-semibold">Sol:</span>
-                                                    <span>{item.solution}</span>
-                                                </div>
-                                                <p className="text-xs text-text-secondary mt-1 ml-8">{item.mitigation}</p>
-                                            </div>
-                                        ))}
-                                    </div>
-                                )}
-                            </div>
-                        </section>
+                    {/* Tabs */}
+                    <div className="flex overflow-x-auto border-b border-border/50 no-scrollbar">
+                        <TabButton
+                            active={activeTab === 'overview'}
+                            onClick={() => setActiveTab('overview')}
+                            label="1. Overview"
+                        />
+                        <TabButton
+                            active={activeTab === 'users'}
+                            onClick={() => setActiveTab('users')}
+                            label="2. Users & Target"
+                        />
+                        <TabButton
+                            active={activeTab === 'strategy'}
+                            onClick={() => setActiveTab('strategy')}
+                            label="3. Strategy & Impact"
+                        />
+                        <TabButton
+                            active={activeTab === 'roadmap'}
+                            onClick={() => setActiveTab('roadmap')}
+                            label="4. Roadmap"
+                        />
+                        <TabButton
+                            active={activeTab === 'risks'}
+                            onClick={() => setActiveTab('risks')}
+                            label="5. Risks"
+                        />
+                    </div>
 
-                        <section>
-                            <h2 className="text-2xl font-bold text-text-primary mb-4 flex items-center gap-3">
-                                <span className="w-8 h-8 rounded-full bg-accent-blue/10 text-accent-blue flex items-center justify-center text-sm font-bold">2</span>
-                                The Solution
-                            </h2>
-                            <div className="prose prose-lg dark:prose-invert text-text-secondary">
-                                <p className="leading-relaxed mb-6">
-                                    {project.solution}
-                                </p>
-
-                            </div>
-                        </section>
-
-                        <section>
-                            <h2 className="text-2xl font-bold text-text-primary mb-4 flex items-center gap-3">
-                                <span className="w-8 h-8 rounded-full bg-accent-green/10 text-accent-green flex items-center justify-center text-sm font-bold">3</span>
-                                The Impact
-                            </h2>
-                            <div className="prose prose-lg dark:prose-invert text-text-secondary">
-                                <p className="leading-relaxed mb-6">
-                                    {project.impact}
-                                </p>
-
-                                {/* Impact Stats */}
-                                {project.stats && (
-                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-                                        {project.stats.map((stat, idx) => (
-                                            <div key={idx} className="bg-bg-card border border-border rounded-xl p-5 text-center shadow-sm">
-                                                <div className="text-2xl md:text-3xl font-bold text-accent-blue mb-1">{stat.value}</div>
-                                                <div className="text-xs font-mono uppercase tracking-widest text-text-muted mb-2">{stat.label}</div>
-                                                <p className="text-xs text-text-secondary">{stat.description}</p>
-                                            </div>
-                                        ))}
-                                    </div>
-                                )}
-
-                                {/* Before vs After Comparison */}
-                                {project.beforeAfter && (
-                                    <div className="mt-8 overflow-hidden border border-border/50 rounded-xl">
-                                        <div className="grid grid-cols-1 md:grid-cols-2">
-                                            <div className="bg-red-500/5 p-6 border-b md:border-b-0 md:border-r border-border/50">
-                                                <h4 className="text-red-400 font-bold mb-4 flex items-center gap-2">
-                                                    Timeline: BEFORE ❌
-                                                </h4>
-                                                <ul className="space-y-4">
-                                                    {project.beforeAfter.map((item, idx) => (
-                                                        <li key={idx}>
-                                                            <div className="text-xs text-text-muted uppercase tracking-wider mb-1">{item.aspect}</div>
-                                                            <div className="text-text-secondary text-sm italic">"{item.before}"</div>
-                                                        </li>
-                                                    ))}
-                                                </ul>
-                                            </div>
-                                            <div className="bg-green-500/5 p-6">
-                                                <h4 className="text-green-400 font-bold mb-4 flex items-center gap-2">
-                                                    Timeline: AFTER ✅
-                                                </h4>
-                                                <ul className="space-y-4">
-                                                    {project.beforeAfter.map((item, idx) => (
-                                                        <li key={idx}>
-                                                            <div className="text-xs text-text-muted uppercase tracking-wider mb-1">{item.aspect}</div>
-                                                            <div className="text-text-primary text-sm font-medium">{item.after}</div>
-                                                        </li>
-                                                    ))}
-                                                </ul>
-                                            </div>
-                                        </div>
-                                    </div>
-                                )}
-                            </div>
-                        </section>
-
-                        {/* Target Audience / Personas */}
-                        {project.personas && (
-                            <section>
-                                <h2 className="text-2xl font-bold text-text-primary mb-4 flex items-center gap-3">
-                                    <span className="w-8 h-8 rounded-full bg-teal-500/10 text-teal-400 flex items-center justify-center text-sm font-bold">4</span>
-                                    Target Audience Analysis
-                                </h2>
-                                <div className="grid md:grid-cols-2 gap-4">
-                                    {project.personas.map((persona, idx) => (
-                                        <div key={idx} className="bg-bg-card border border-border p-5 rounded-xl shadow-sm hover:border-teal-500/30 transition-colors">
-                                            <div className="flex items-center gap-2 mb-3">
-                                                <div className="w-8 h-8 rounded-full bg-bg-secondary flex items-center justify-center text-lg">👤</div>
-                                                <h4 className="font-bold text-text-primary">{persona.role}</h4>
-                                            </div>
-                                            <div className="space-y-2 text-sm">
-                                                <p className="text-text-secondary"><span className="font-semibold text-red-400">Pain:</span> {persona.pain}</p>
-                                                <p className="text-text-secondary"><span className="font-semibold text-green-400">Goal:</span> {persona.goal}</p>
-                                            </div>
-                                        </div>
-                                    ))}
-                                </div>
-                            </section>
-                        )}
-
-                        {/* Business Value Proposition */}
-                        {project.businessModel && (
-                            <section>
-                                <h2 className="text-2xl font-bold text-text-primary mb-4 flex items-center gap-3">
-                                    <span className="w-8 h-8 rounded-full bg-yellow-500/10 text-yellow-400 flex items-center justify-center text-sm font-bold">5</span>
-                                    Business Value Proposition
-                                </h2>
-                                <div className="grid gap-3">
-                                    {project.businessModel.map((model, idx) => (
-                                        <div key={idx} className="flex flex-col md:flex-row md:items-center gap-3 bg-yellow-500/5 p-4 rounded-lg border border-yellow-500/20">
-                                            <div className="md:w-1/4 font-mono text-xs uppercase tracking-widest text-yellow-600 font-bold">{model.type}</div>
-                                            <div className="md:w-3/4 text-text-secondary text-sm">{model.value}</div>
-                                        </div>
-                                    ))}
-                                </div>
-                            </section>
-                        )}
-
-                        {/* Development Timeline */}
-                        {project.timeline && (
-                            <section>
-                                <h2 className="text-2xl font-bold text-text-primary mb-4 flex items-center gap-3">
-                                    <span className="w-8 h-8 rounded-full bg-purple-500/10 text-purple-400 flex items-center justify-center text-sm font-bold">6</span>
-                                    Development Timeline
-                                </h2>
-                                <div className="space-y-6 border-l-2 border-border/50 ml-4 pl-8 py-2">
-                                    {project.timeline.map((phase, idx) => (
-                                        <div key={idx} className="relative">
-                                            <div className="absolute -left-[41px] top-1 w-5 h-5 rounded-full bg-bg-primary border-4 border-purple-500/50"></div>
-                                            <h4 className="font-bold text-text-primary text-lg">{phase.phase}</h4>
-                                            <span className="text-xs font-mono text-purple-400 mb-2 block">{phase.period}</span>
-                                            <ul className="list-disc list-inside text-sm text-text-secondary space-y-1">
-                                                {phase.activities.map((act, i) => (
-                                                    <li key={i}>{act}</li>
+                    {/* Tab Content */}
+                    <div className="p-6 md:p-8 min-h-[400px]">
+                        <AnimatePresence mode="wait">
+                            {activeTab === 'overview' && (
+                                <motion.div
+                                    key="overview"
+                                    initial={{ opacity: 0, y: 10 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    exit={{ opacity: 0, y: -10 }}
+                                    className="space-y-8"
+                                >
+                                    <Section title="The Problem" icon={<ShieldAlert size={18} className="text-red-400" />}>
+                                        <p className="text-text-secondary leading-relaxed">{project.problem}</p>
+                                        {project.problemMap && (
+                                            <div className="grid gap-3 mt-4">
+                                                {project.problemMap.map((item, idx) => (
+                                                    <div key={idx} className="bg-bg-primary p-3 rounded-lg border border-border/50 text-sm">
+                                                        <div className="font-semibold text-text-primary mb-1">{item.problem}</div>
+                                                        <div className="text-text-muted italic">"{item.context}"</div>
+                                                    </div>
                                                 ))}
-                                            </ul>
-                                        </div>
-                                    ))}
-                                </div>
-                            </section>
-                        )}
+                                            </div>
+                                        )}
+                                    </Section>
 
-                        {/* Mitigation Plan */}
-                        {project.mitigationPlans && (
-                            <section>
-                                <h2 className="text-2xl font-bold text-text-primary mb-4 flex items-center gap-3">
-                                    <span className="w-8 h-8 rounded-full bg-orange-500/10 text-orange-400 flex items-center justify-center text-sm font-bold">7</span>
-                                    Risk Mitigation
-                                </h2>
-                                <div className="grid gap-4">
-                                    {project.mitigationPlans.map((plan, idx) => (
-                                        <div key={idx} className="bg-orange-100 dark:bg-orange-500/10 border border-orange-500/30 rounded-xl p-5">
-                                            <h4 className="font-bold text-orange-700 dark:text-orange-300 mb-2 flex items-center gap-2">
-                                                ⚠️ {plan.risk}
-                                            </h4>
-                                            <p className="text-sm text-text-secondary leading-relaxed">
-                                                <span className="font-semibold text-orange-600 dark:text-orange-400">Action: </span>
-                                                {plan.action}
-                                            </p>
+                                    <Section title="The Solution" icon={<CheckCircle2 size={18} className="text-green-400" />}>
+                                        <p className="text-text-secondary leading-relaxed">{project.solution}</p>
+                                    </Section>
+
+                                    {project.beforeAfter && (
+                                        <Section title="Before vs After" icon={<ArrowRightLeft size={18} className="text-blue-400" />}>
+                                            <div className="grid md:grid-cols-2 gap-4 mt-2">
+                                                <div className="bg-red-500/5 p-4 rounded-lg border border-red-500/10">
+                                                    <h4 className="text-red-400 text-xs font-bold uppercase tracking-wider mb-3">Before</h4>
+                                                    <ul className="space-y-3">
+                                                        {project.beforeAfter.map((item, idx) => (
+                                                            <li key={idx} className="text-sm text-text-secondary">
+                                                                <span className="block text-xs text-text-muted mb-1">{item.aspect}</span>
+                                                                "{item.before}"
+                                                            </li>
+                                                        ))}
+                                                    </ul>
+                                                </div>
+                                                <div className="bg-green-500/5 p-4 rounded-lg border border-green-500/10">
+                                                    <h4 className="text-green-400 text-xs font-bold uppercase tracking-wider mb-3">After</h4>
+                                                    <ul className="space-y-3">
+                                                        {project.beforeAfter.map((item, idx) => (
+                                                            <li key={idx} className="text-sm text-text-primary font-medium">
+                                                                <span className="block text-xs text-text-muted mb-1">{item.aspect}</span>
+                                                                {item.after}
+                                                            </li>
+                                                        ))}
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                        </Section>
+                                    )}
+                                </motion.div>
+                            )}
+
+                            {activeTab === 'users' && (
+                                <motion.div
+                                    key="users"
+                                    initial={{ opacity: 0, y: 10 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    exit={{ opacity: 0, y: -10 }}
+                                    className="grid md:grid-cols-2 gap-6"
+                                >
+                                    {project.personas?.map((persona, idx) => (
+                                        <div key={idx} className="bg-bg-primary border border-border/60 p-5 rounded-xl">
+                                            <div className="flex items-center gap-3 mb-4">
+                                                <div className="w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-xl">
+                                                    👤
+                                                </div>
+                                                <div>
+                                                    <h4 className="font-bold text-text-primary">{persona.role}</h4>
+                                                    <span className="text-xs text-text-muted">Primary Persona</span>
+                                                </div>
+                                            </div>
+                                            <div className="space-y-3 text-sm">
+                                                <div>
+                                                    <span className="text-xs font-bold text-red-400 uppercase tracking-wider">Pain Points</span>
+                                                    <p className="text-text-secondary mt-1">{persona.pain}</p>
+                                                </div>
+                                                <div>
+                                                    <span className="text-xs font-bold text-green-400 uppercase tracking-wider">Goals</span>
+                                                    <p className="text-text-secondary mt-1">{persona.goal}</p>
+                                                </div>
+                                            </div>
                                         </div>
                                     ))}
-                                </div>
-                            </section>
-                        )}
+                                </motion.div>
+                            )}
+
+                            {activeTab === 'strategy' && (
+                                <motion.div
+                                    key="strategy"
+                                    initial={{ opacity: 0, y: 10 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    exit={{ opacity: 0, y: -10 }}
+                                    className="space-y-8"
+                                >
+                                    <Section title="Key Success Metrics (KPIs)" icon={<BarChart3 size={18} className="text-accent-blue" />}>
+                                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                            {project.stats?.map((stat, idx) => (
+                                                <div key={idx} className="bg-bg-primary p-4 rounded-xl border border-border/50 text-center">
+                                                    <div className="text-2xl font-bold text-text-primary mb-1">{stat.value}</div>
+                                                    <div className="text-xs text-text-muted uppercase tracking-wider mb-2">{stat.label}</div>
+                                                    <p className="text-xs text-text-secondary">{stat.description}</p>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </Section>
+
+                                    <Section title="Business Value Proposition" icon={<Wallet size={18} className="text-yellow-500" />}>
+                                        <div className="space-y-3">
+                                            {project.businessModel?.map((model, idx) => (
+                                                <div key={idx} className="flex gap-4 items-start bg-yellow-500/5 p-4 rounded-lg border border-yellow-500/10">
+                                                    <div className="min-w-[120px] font-mono text-xs font-bold text-yellow-600 dark:text-yellow-400 uppercase tracking-tighter mt-1">
+                                                        {model.type}
+                                                    </div>
+                                                    <p className="text-sm text-text-secondary">{model.value}</p>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </Section>
+                                </motion.div>
+                            )}
+
+                            {activeTab === 'roadmap' && (
+                                <motion.div
+                                    key="roadmap"
+                                    initial={{ opacity: 0, y: 10 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    exit={{ opacity: 0, y: -10 }}
+                                >
+                                    <div className="space-y-6 border-l-2 border-border/50 ml-3 pl-8 py-2">
+                                        {project.timeline?.map((phase, idx) => (
+                                            <div key={idx} className="relative">
+                                                <div className="absolute -left-[41px] top-1 w-5 h-5 rounded-full bg-bg-card border-4 border-accent-blue/50"></div>
+                                                <h4 className="font-bold text-text-primary text-lg">{phase.phase}</h4>
+                                                <span className="text-xs font-mono text-accent-blue mb-3 block">{phase.period}</span>
+                                                <ul className="space-y-2">
+                                                    {phase.activities.map((act, i) => (
+                                                        <li key={i} className="flex items-center gap-2 text-sm text-text-secondary">
+                                                            <div className="w-1.5 h-1.5 rounded-full bg-border"></div>
+                                                            {act}
+                                                        </li>
+                                                    ))}
+                                                </ul>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </motion.div>
+                            )}
+
+                            {activeTab === 'risks' && (
+                                <motion.div
+                                    key="risks"
+                                    initial={{ opacity: 0, y: 10 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    exit={{ opacity: 0, y: -10 }}
+                                    className="grid gap-4"
+                                >
+                                    {project.mitigationPlans?.map((plan, idx) => (
+                                        <div key={idx} className="bg-bg-primary border border-orange-500/20 p-5 rounded-xl relative overflow-hidden">
+                                            <div className="absolute top-0 right-0 p-3 opacity-10 text-orange-500">
+                                                <ShieldAlert size={64} />
+                                            </div>
+                                            <div className="relative z-10">
+                                                <h4 className="font-bold text-text-primary mb-2 flex items-center gap-2">
+                                                    <span className="text-orange-500">Risk:</span> {plan.risk}
+                                                </h4>
+                                                <p className="text-sm text-text-secondary leading-relaxed">
+                                                    <span className="font-semibold text-green-500">Mitigation: </span>
+                                                    {plan.action}
+                                                </p>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </motion.div>
+                            )}
+                        </AnimatePresence>
                     </div>
                 </div>
             </div>
         </motion.div>
     );
 };
+
+// Sub-components for cleaner code
+const TabButton = ({ active, onClick, label }) => (
+    <button
+        onClick={onClick}
+        className={`px-6 py-4 text-sm font-medium transition-all relative whitespace-nowrap
+        ${active ? 'text-accent-blue' : 'text-text-muted hover:text-text-primary hover:bg-bg-secondary/50'}`}
+    >
+        {label}
+        {active && (
+            <motion.div
+                layoutId="activeTabLine"
+                className="absolute bottom-0 left-0 right-0 h-0.5 bg-accent-blue"
+            />
+        )}
+    </button>
+);
+
+const Section = ({ title, icon, children }) => (
+    <div>
+        <h3 className="text-sm font-bold text-text-primary mb-4 flex items-center gap-2 uppercase tracking-wide">
+            {icon}
+            {title}
+        </h3>
+        {children}
+    </div>
+);
+
 
 export default ProjectDetail;

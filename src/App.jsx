@@ -1,8 +1,11 @@
+import { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import { ThemeProvider } from './context/ThemeContext';
 import { LanguageProvider } from './context/LanguageContext';
 import NavbarVertical from './components/NavbarVertical';
+import Navbar from './components/Navbar';
 import Footer from './components/Footer';
+import ChatWidget from './components/ChatWidget';
 import Home from './pages/Home';
 import Profile from './pages/Profile';
 import Projects from './pages/Projects';
@@ -13,10 +16,14 @@ import Lab from './pages/Lab';
 function AppContent() {
   const location = useLocation();
   const isStoneBg = location.pathname === '/profile' || location.pathname === '/';
+  const [isChatOpen, setIsChatOpen] = useState(false);
 
   return (
     <div className={`${isStoneBg ? 'bg-stone-200' : 'bg-white'} dark:bg-bg-primary min-h-screen text-text-primary transition-colors duration-300 font-sans flex flex-col md:pr-28 relative`}>
-      <NavbarVertical />
+      <div className="md:hidden">
+        <Navbar />
+      </div>
+      <NavbarVertical onChatToggle={() => setIsChatOpen(!isChatOpen)} />
       <div className="flex-grow">
         <Routes>
           <Route path="/" element={<Home />} />
@@ -28,6 +35,7 @@ function AppContent() {
         </Routes>
       </div>
       <Footer />
+      <ChatWidget isOpen={isChatOpen} onClose={() => setIsChatOpen(false)} onToggle={() => setIsChatOpen(!isChatOpen)} />
     </div>
   );
 }

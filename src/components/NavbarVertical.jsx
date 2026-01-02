@@ -1,11 +1,11 @@
 import { NavLink } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Home, User, Briefcase, FileText, Globe, Sun, Moon, FlaskConical } from 'lucide-react'; // Icons
+import { Home, User, Briefcase, FileText, Globe, Sun, Moon, FlaskConical, MessageSquare } from 'lucide-react'; // Icons
 import { useTheme } from '../context/ThemeContext';
 import { useLanguage } from '../context/LanguageContext';
 import { translations } from '../utils/translations';
 
-const NavbarVertical = () => {
+const NavbarVertical = ({ onChatToggle }) => {
     const { theme, toggleTheme } = useTheme();
     const { language, toggleLanguage } = useLanguage();
     // No scroll hide logic needed for side navbar usually, it stays visible
@@ -17,9 +17,9 @@ const NavbarVertical = () => {
             initial={{ opacity: 0, x: 50 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.5, delay: 0.2 }}
-            className="fixed right-6 top-10 z-50 hidden md:flex" // Adjusted to top-10 per request
+            className="fixed right-6 top-6 z-50 hidden md:flex max-h-[90vh] overflow-y-auto py-2 no-scrollbar" // Reverted to top-6 per request
         >
-            <div className="bg-white/10 dark:bg-black/20 backdrop-blur-xl border border-white/20 dark:border-white/10 rounded-full py-6 px-3 shadow-[0_8px_32px_0_rgba(31,38,135,0.07)] flex flex-col items-center gap-6 transition-all duration-300 hover:bg-white/20 dark:hover:bg-black/30">
+            <div className="bg-white/10 dark:bg-black/20 backdrop-blur-xl border border-white/20 dark:border-white/10 rounded-full py-3 px-2 shadow-[0_8px_32px_0_rgba(31,38,135,0.07)] flex flex-col items-center gap-3 transition-all duration-300 hover:bg-white/20 dark:hover:bg-black/30">
 
                 {/* Logo / Brand (simplified to initial or dot) */}
                 <NavLink to="/" className="w-10 h-10 flex items-center justify-center rounded-full bg-accent-green/10 text-accent-green font-bold text-lg mb-2 hover:scale-110 transition-transform">
@@ -55,6 +55,16 @@ const NavbarVertical = () => {
                         className="w-10 h-10 rounded-full flex items-center justify-center hover:bg-white/10 transition-colors text-text-primary/70 hover:text-text-primary"
                     >
                         {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
+                    </button>
+
+                    <button
+                        onClick={onChatToggle}
+                        className="w-10 h-10 rounded-full flex items-center justify-center hover:bg-white/10 transition-colors text-text-primary/70 hover:text-text-primary relative group"
+                    >
+                        <MessageSquare size={18} />
+                        <span className="absolute right-14 top-1/2 -translate-y-1/2 text-[10px] bg-black/80 text-white px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
+                            Chat Ningsih
+                        </span>
                     </button>
                 </div>
             </div>
