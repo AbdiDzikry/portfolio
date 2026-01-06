@@ -138,20 +138,56 @@ export const sendMessageToAI = async (userMessage) => {
  */
 const simulateAIResponse = (msg) => {
     const lowerMsg = msg.toLowerCase();
+    const t = translations.en.profile;
 
     return new Promise((resolve) => {
         setTimeout(() => {
-            if (lowerMsg.includes('project') || lowerMsg.includes('work')) {
-                resolve("I've worked on several key projects like **CBL Property** and **Grand Telar Residence**. You can view the full details in the Projects tab!");
-            } else if (lowerMsg.includes('skill') || lowerMsg.includes('stack')) {
-                resolve("My technical stack includes **React, TailwindCSS, and Framer Motion**, with a strong focus on Product Management methodologies like Agile and Scrum.");
-            } else if (lowerMsg.includes('contact') || lowerMsg.includes('email')) {
-                resolve("You can reach me directly via email at sulthanabdi1@gmail.com or connect on LinkedIn!");
-            } else if (lowerMsg.includes('who are you')) {
-                resolve("I am the AI assistant for **Sulthan Abdi Dzikry**, a Product Designer and Developer.");
-            } else {
-                resolve("That's an interesting question! While I don't have a specific answer in my database, I'd suggest checking the 'About' section or contacting me directly.");
+            // 1. Check for specific Projects
+            const matchedProject = projectsData.find(p =>
+                lowerMsg.includes(p.title.toLowerCase()) ||
+                lowerMsg.includes(p.id.replace('-', ' '))
+            );
+
+            if (matchedProject) {
+                resolve(`**${matchedProject.title}** is a ${matchedProject.category}.\n\nIt solves: "${matchedProject.problem}"\n\nSolution: ${matchedProject.solution}\n\nKey Impact: ${matchedProject.impact}`);
+                return;
             }
-        }, 1000);
+
+            // 2. Questions about "Projects" in general
+            if (lowerMsg.includes('project') || lowerMsg.includes('work') || lowerMsg.includes('portfolio')) {
+                const projectList = projectsData.map(p => `- **${p.title}** (${p.category})`).join('\n');
+                resolve(`I have worked on several exciting projects:\n\n${projectList}\n\nYou can ask me about any of them specifically!`);
+                return;
+            }
+
+            // 3. Questions about Skills / Stack
+            if (lowerMsg.includes('skill') || lowerMsg.includes('stack') || lowerMsg.includes('tech')) {
+                const uniqueTags = [...new Set(projectsData.flatMap(p => p.tags))].join(', ');
+                resolve(`My technical arsenal includes: **${uniqueTags}**.\n\nI specialize in Product Design and Development.`);
+                return;
+            }
+
+            // 4. Questions about Experience / Background
+            if (lowerMsg.includes('experience') || lowerMsg.includes('background') || lowerMsg.includes('job')) {
+                const recentJob = t.jobs[0];
+                resolve(`I am currently a **${recentJob.role}** at **${recentJob.company}** (${recentJob.period}).\n\n${t.bio}`);
+                return;
+            }
+
+            // 5. Contact / Email
+            if (lowerMsg.includes('contact') || lowerMsg.includes('email') || lowerMsg.includes('reach')) {
+                resolve(`You can reach me directly via email at sulthanabdi1@gmail.com or connect on LinkedIn!`);
+                return;
+            }
+
+            // 6. Identity
+            if (lowerMsg.includes('who are you')) {
+                resolve(`I am the AI assistant for **Sulthan Abdi Dzikry**, a ${t.role} and Developer. I'm here to help you navigate his portfolio.`);
+                return;
+            }
+
+            // Default Fallback
+            resolve("That's an interesting question! I focus on Sulthan's professional work. Try asking about his **projects**, **skills**, or **experience**.");
+        }, 800);
     });
 };
