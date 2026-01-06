@@ -32,7 +32,15 @@ const NavbarVertical = ({ onChatToggle }) => {
                     <NavIcon to="/profile" icon={<User size={20} />} label={t.nav.profile} />
                     <NavIcon to="/projects" icon={<Briefcase size={20} />} label={t.nav.projects} />
                     <NavIcon to="/case-studies" icon={<FileText size={20} />} label={t.nav.caseStudies} />
-                    <NavIcon to="/lab" icon={<FlaskConical size={20} />} label={t.nav.lab} />
+                    <button
+                        onClick={onChatToggle}
+                        className="relative w-10 h-10 flex items-center justify-center rounded-full group text-text-primary/60 hover:text-text-primary transition-colors"
+                    >
+                        <MessageSquare size={20} />
+                        <span className="absolute right-14 top-1/2 -translate-y-1/2 text-xs font-medium bg-white/80 dark:bg-black/80 backdrop-blur-md text-text-primary px-3 py-1.5 rounded-lg opacity-0 group-hover:opacity-100 transition-all duration-200 translate-x-2 group-hover:translate-x-0 whitespace-nowrap shadow-sm border border-white/20 pointer-events-none">
+                            Chat Ningsih
+                        </span>
+                    </button>
                 </div>
 
                 {/* Divider */}
@@ -57,15 +65,15 @@ const NavbarVertical = ({ onChatToggle }) => {
                         {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
                     </button>
 
-                    <button
-                        onClick={onChatToggle}
-                        className="w-10 h-10 rounded-full flex items-center justify-center hover:bg-white/10 transition-colors text-text-primary/70 hover:text-text-primary relative group"
+                    <NavLink
+                        to="/lab"
+                        className={({ isActive }) => `w-10 h-10 rounded-full flex items-center justify-center hover:bg-white/10 transition-colors text-text-primary/70 hover:text-text-primary relative group ${isActive ? 'bg-white/10 text-text-primary' : ''}`}
                     >
-                        <MessageSquare size={18} />
-                        <span className="absolute right-14 top-1/2 -translate-y-1/2 text-[10px] bg-black/80 text-white px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
-                            Chat Ningsih
+                        <FlaskConical size={18} />
+                        <span className="absolute right-12 top-1/2 -translate-y-1/2 text-[10px] bg-black/80 text-white px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
+                            {t.nav.lab}
                         </span>
-                    </button>
+                    </NavLink>
                 </div>
             </div>
         </motion.nav>

@@ -1,37 +1,69 @@
 import { useParams, Link } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, FileText, CheckCircle2, ShieldAlert, ArrowRightLeft, BarChart3, Wallet } from 'lucide-react';
+import {
+    ArrowLeft, FileText, Download, Target, Users, Calendar,
+    CheckCircle2, AlertTriangle, Layers, PenTool, Smartphone,
+    Lightbulb, Activity, Zap, ShieldCheck, BarChart3
+} from 'lucide-react';
 import { projectsData } from '../data/projects';
-import { useLanguage } from '../context/LanguageContext'; // Optional if we translate later
+import { useLanguage } from '../context/LanguageContext';
+import { translations } from '../utils/translations';
+import { generatePrdPdf } from '../utils/generatePrdPdf';
 
 const ProjectDetail = () => {
     const { id } = useParams();
-    const project = projectsData.find(p => p.id === id);
-    const [selectedImage, setSelectedImage] = useState(0);
-    const [activeTab, setActiveTab] = useState('overview');
+    const { language } = useLanguage();
+    const rawProject = projectsData.find(p => p.id === id);
 
-    // Auto-slideshow
+    const project = rawProject && language === 'id' && rawProject.translations?.id
+        ? { ...rawProject, ...rawProject.translations.id }
+        : rawProject;
+
+    const t = translations[language].projectDetail;
+
+    const [selectedImage, setSelectedImage] = useState(0);
+
     useEffect(() => {
         if (!project || !project.showcaseImages || project.showcaseImages.length <= 1) return;
-
         const interval = setInterval(() => {
             setSelectedImage((prev) => (prev + 1) % project.showcaseImages.length);
         }, 3000);
-
         return () => clearInterval(interval);
     }, [project]);
 
     if (!project) {
         return (
             <div className="min-h-screen flex items-center justify-center text-text-primary">
-                <h2>Project not found</h2>
-                <Link to="/projects" className="ml-4 text-accent-blue underline">Back to Projects</Link>
+                <h2>{t.notFound}</h2>
+                <Link to="/projects" className="ml-4 text-accent-blue underline">{t.back}</Link>
             </div>
         );
     }
 
     const showcaseImages = project.showcaseImages || [project.image];
+
+    // Helper for visual cards
+    const InfoCard = ({ icon: Icon, label, value, className = "" }) => (
+        <div className={`p-5 rounded-2xl bg-bg-card border border-border/50 hover:border-accent-blue/30 transition-all hover:shadow-lg ${className}`}>
+            <div className="flex items-center gap-3 mb-3">
+                <div className="p-2 rounded-lg bg-accent-blue/10 text-accent-blue">
+                    <Icon size={18} />
+                </div>
+                <h4 className="text-xs font-mono uppercase tracking-wider text-text-muted">{label}</h4>
+            </div>
+            <div className="text-text-primary font-medium leading-relaxed">
+                {value}
+            </div>
+        </div>
+    );
+
+    const SectionTitle = ({ children }) => (
+        <h3 className="text-lg font-bold text-text-primary mb-4 flex items-center gap-2">
+            <span className="w-1 h-6 bg-accent-pink rounded-full"></span>
+            {children}
+        </h3>
+    );
 
     return (
         <motion.div
@@ -40,14 +72,12 @@ const ProjectDetail = () => {
             exit={{ opacity: 0 }}
             className="bg-bg-primary min-h-screen pt-32 pb-20 px-6 md:px-12 lg:px-20 transition-colors duration-300"
         >
-            <div className="max-w-4xl mx-auto">
-                {/* Back Link */}
+            <div className="max-w-5xl mx-auto">
                 <Link to="/projects" className="inline-flex items-center gap-2 text-text-muted hover:text-accent-blue transition-colors mb-8 group">
                     <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform" />
-                    <span className="text-sm font-mono">Back to Projects</span>
+                    <span className="text-sm font-mono">{t.back}</span>
                 </Link>
 
-                {/* Header */}
                 <header className="mb-12">
                     <div className="flex flex-wrap gap-2 mb-4">
                         <span className="px-3 py-1 rounded-full border border-accent-pink/30 text-accent-pink text-xs font-mono uppercase tracking-widest bg-accent-pink/5">
@@ -55,7 +85,7 @@ const ProjectDetail = () => {
                         </span>
                         {project.size === 'large' && (
                             <span className="px-3 py-1 rounded-full border border-accent-blue/30 text-accent-blue text-xs font-mono uppercase tracking-widest bg-accent-blue/5">
-                                Featured
+                                {t.featured}
                             </span>
                         )}
                     </div>
@@ -67,28 +97,19 @@ const ProjectDetail = () => {
                     </p>
                 </header>
 
-                {/* Image Gallery */}
                 <div className="mb-16">
-                    {/* Main Image */}
                     <div className="w-full h-[300px] md:h-[500px] rounded-3xl overflow-hidden mb-4 shadow-2xl border border-border/50 bg-bg-card relative group">
-                        {/* 1. Blurred Background Layer for "Fill" effect */}
                         <div
                             className="absolute inset-0 bg-cover bg-center blur-2xl scale-110 opacity-40 dark:opacity-20"
                             style={{ backgroundImage: `url(${showcaseImages[selectedImage]})` }}
                         />
-
-                        {/* 2. Main Image (Fitted) */}
                         <img
                             src={showcaseImages[selectedImage]}
                             alt={`${project.title} - Image ${selectedImage + 1}`}
                             className="w-full h-full object-contain relative z-10 transition-transform duration-500"
                         />
-
-                        {/* Gradient Overlay (Subtle) */}
                         <div className="absolute inset-0 bg-gradient-to-t from-bg-primary/20 to-transparent pointer-events-none z-20"></div>
                     </div>
-
-                    {/* Thumbnail Gallery */}
                     {showcaseImages.length > 1 && (
                         <div className="grid grid-cols-3 md:grid-cols-4 gap-4">
                             {showcaseImages.map((img, idx) => (
@@ -100,29 +121,24 @@ const ProjectDetail = () => {
                                         : 'border-border/30 hover:border-accent-blue/50 opacity-60 hover:opacity-100'
                                         }`}
                                 >
-                                    <img
-                                        src={img}
-                                        alt={`Thumbnail ${idx + 1}`}
-                                        className="w-full h-full object-cover"
-                                    />
+                                    <img src={img} alt={`Thumb ${idx}`} className="w-full h-full object-cover" />
                                 </button>
                             ))}
                         </div>
                     )}
                 </div>
 
-                {/* Tech Stack */}
                 <div className="mb-16 border-y border-border/50 py-8 grid grid-cols-2 md:grid-cols-4 gap-8">
                     <div>
-                        <h3 className="text-text-muted text-xs font-mono uppercase tracking-widest mb-2">Role</h3>
-                        <p className="text-text-primary font-medium">UI/UX & Frontend</p>
+                        <h3 className="text-text-muted text-xs font-mono uppercase tracking-widest mb-2">{t.role}</h3>
+                        <p className="text-text-primary font-medium">Product Designer</p>
                     </div>
                     <div>
-                        <h3 className="text-text-muted text-xs font-mono uppercase tracking-widest mb-2">Timeline</h3>
+                        <h3 className="text-text-muted text-xs font-mono uppercase tracking-widest mb-2">{t.timeline}</h3>
                         <p className="text-text-primary font-medium">2024 - Present</p>
                     </div>
                     <div className="col-span-2">
-                        <h3 className="text-text-muted text-xs font-mono uppercase tracking-widest mb-2">Technologies</h3>
+                        <h3 className="text-text-muted text-xs font-mono uppercase tracking-widest mb-2">{t.tech}</h3>
                         <div className="flex flex-wrap gap-2">
                             {project.tags.map(tag => (
                                 <span key={tag} className="text-text-primary text-sm font-medium bg-bg-secondary px-2 py-1 rounded">
@@ -133,272 +149,188 @@ const ProjectDetail = () => {
                     </div>
                 </div>
 
-                {/* Case Study Content */}
+                {/* VISUAL PRD SECTION - PROFESSIONAL REDESIGN */}
+                <div className="space-y-8">
+                    {/* PRD Header - Professional & Clean */}
+                    <div className="bg-bg-card border border-border rounded-xl p-8 relative overflow-hidden">
+                        <div className="absolute top-0 right-0 w-64 h-64 bg-accent-blue/5 rounded-full blur-3xl -mr-32 -mt-32 pointer-events-none"></div>
 
-                {/* PRD Section */}
-                <div className="border border-border/50 rounded-2xl bg-bg-card overflow-hidden shadow-sm">
-                    {/* PRD Header */}
-                    <div className="bg-bg-secondary/50 border-b border-border/50 p-6 flex items-center justify-between">
-                        <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 rounded-lg bg-accent-blue/10 flex items-center justify-center text-accent-blue">
-                                <FileText size={20} />
-                            </div>
-                            <div>
-                                <h2 className="text-lg font-bold text-text-primary">Product Requirement Document</h2>
-                                <p className="text-xs text-text-muted font-mono uppercase tracking-wider">Internal Reference: {project.id.toUpperCase()}-V1.0</p>
-                            </div>
-                        </div>
-                        <div className="hidden md:flex gap-2">
-                            <span className="px-2 py-1 rounded bg-green-500/10 text-green-500 text-xs font-bold border border-green-500/20">APPROVED</span>
-                            <span className="px-2 py-1 rounded bg-bg-primary border border-border text-text-secondary text-xs">Public Access</span>
-                        </div>
-                    </div>
-
-                    {/* Tabs */}
-                    <div className="flex overflow-x-auto border-b border-border/50 no-scrollbar">
-                        <TabButton
-                            active={activeTab === 'overview'}
-                            onClick={() => setActiveTab('overview')}
-                            label="1. Overview"
-                        />
-                        <TabButton
-                            active={activeTab === 'users'}
-                            onClick={() => setActiveTab('users')}
-                            label="2. Users & Target"
-                        />
-                        <TabButton
-                            active={activeTab === 'strategy'}
-                            onClick={() => setActiveTab('strategy')}
-                            label="3. Strategy & Impact"
-                        />
-                        <TabButton
-                            active={activeTab === 'roadmap'}
-                            onClick={() => setActiveTab('roadmap')}
-                            label="4. Roadmap"
-                        />
-                        <TabButton
-                            active={activeTab === 'risks'}
-                            onClick={() => setActiveTab('risks')}
-                            label="5. Risks"
-                        />
-                    </div>
-
-                    {/* Tab Content */}
-                    <div className="p-6 md:p-8 min-h-[400px]">
-                        <AnimatePresence mode="wait">
-                            {activeTab === 'overview' && (
-                                <motion.div
-                                    key="overview"
-                                    initial={{ opacity: 0, y: 10 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    exit={{ opacity: 0, y: -10 }}
-                                    className="space-y-8"
-                                >
-                                    <Section title="The Problem" icon={<ShieldAlert size={18} className="text-red-400" />}>
-                                        <p className="text-text-secondary leading-relaxed">{project.problem}</p>
-                                        {project.problemMap && (
-                                            <div className="grid gap-3 mt-4">
-                                                {project.problemMap.map((item, idx) => (
-                                                    <div key={idx} className="bg-bg-primary p-3 rounded-lg border border-border/50 text-sm">
-                                                        <div className="font-semibold text-text-primary mb-1">{item.problem}</div>
-                                                        <div className="text-text-muted italic">"{item.context}"</div>
-                                                    </div>
-                                                ))}
-                                            </div>
-                                        )}
-                                    </Section>
-
-                                    <Section title="The Solution" icon={<CheckCircle2 size={18} className="text-green-400" />}>
-                                        <p className="text-text-secondary leading-relaxed">{project.solution}</p>
-                                    </Section>
-
-                                    {project.beforeAfter && (
-                                        <Section title="Before vs After" icon={<ArrowRightLeft size={18} className="text-blue-400" />}>
-                                            <div className="grid md:grid-cols-2 gap-4 mt-2">
-                                                <div className="bg-red-500/5 p-4 rounded-lg border border-red-500/10">
-                                                    <h4 className="text-red-400 text-xs font-bold uppercase tracking-wider mb-3">Before</h4>
-                                                    <ul className="space-y-3">
-                                                        {project.beforeAfter.map((item, idx) => (
-                                                            <li key={idx} className="text-sm text-text-secondary">
-                                                                <span className="block text-xs text-text-muted mb-1">{item.aspect}</span>
-                                                                "{item.before}"
-                                                            </li>
-                                                        ))}
-                                                    </ul>
-                                                </div>
-                                                <div className="bg-green-500/5 p-4 rounded-lg border border-green-500/10">
-                                                    <h4 className="text-green-400 text-xs font-bold uppercase tracking-wider mb-3">After</h4>
-                                                    <ul className="space-y-3">
-                                                        {project.beforeAfter.map((item, idx) => (
-                                                            <li key={idx} className="text-sm text-text-primary font-medium">
-                                                                <span className="block text-xs text-text-muted mb-1">{item.aspect}</span>
-                                                                {item.after}
-                                                            </li>
-                                                        ))}
-                                                    </ul>
-                                                </div>
-                                            </div>
-                                        </Section>
-                                    )}
-                                </motion.div>
-                            )}
-
-                            {activeTab === 'users' && (
-                                <motion.div
-                                    key="users"
-                                    initial={{ opacity: 0, y: 10 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    exit={{ opacity: 0, y: -10 }}
-                                    className="grid md:grid-cols-2 gap-6"
-                                >
-                                    {project.personas?.map((persona, idx) => (
-                                        <div key={idx} className="bg-bg-primary border border-border/60 p-5 rounded-xl">
-                                            <div className="flex items-center gap-3 mb-4">
-                                                <div className="w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-xl">
-                                                    👤
-                                                </div>
-                                                <div>
-                                                    <h4 className="font-bold text-text-primary">{persona.role}</h4>
-                                                    <span className="text-xs text-text-muted">Primary Persona</span>
-                                                </div>
-                                            </div>
-                                            <div className="space-y-3 text-sm">
-                                                <div>
-                                                    <span className="text-xs font-bold text-red-400 uppercase tracking-wider">Pain Points</span>
-                                                    <p className="text-text-secondary mt-1">{persona.pain}</p>
-                                                </div>
-                                                <div>
-                                                    <span className="text-xs font-bold text-green-400 uppercase tracking-wider">Goals</span>
-                                                    <p className="text-text-secondary mt-1">{persona.goal}</p>
-                                                </div>
-                                            </div>
+                        <div className="relative z-10">
+                            <div className="flex flex-col md:flex-row justify-between items-start gap-6 mb-8 border-b border-border pb-8">
+                                <div>
+                                    <div className="flex items-center gap-3 mb-3">
+                                        <span className="font-mono text-xs text-text-muted uppercase tracking-widest">
+                                            {t.ref}: {project.id.toUpperCase()}-V1.0
+                                        </span>
+                                        <div className={`px-2.5 py-0.5 rounded text-[10px] font-bold border uppercase tracking-wide ${project.status === 'ON TRACK' || project.status === 'LIVE' || project.status === 'COMPLETED'
+                                            ? 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20'
+                                            : 'bg-amber-500/10 text-amber-600 border-amber-500/20'}`}>
+                                            {project.status || 'DRAFT'}
                                         </div>
-                                    ))}
-                                </motion.div>
-                            )}
-
-                            {activeTab === 'strategy' && (
-                                <motion.div
-                                    key="strategy"
-                                    initial={{ opacity: 0, y: 10 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    exit={{ opacity: 0, y: -10 }}
-                                    className="space-y-8"
-                                >
-                                    <Section title="Key Success Metrics (KPIs)" icon={<BarChart3 size={18} className="text-accent-blue" />}>
-                                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                            {project.stats?.map((stat, idx) => (
-                                                <div key={idx} className="bg-bg-primary p-4 rounded-xl border border-border/50 text-center">
-                                                    <div className="text-2xl font-bold text-text-primary mb-1">{stat.value}</div>
-                                                    <div className="text-xs text-text-muted uppercase tracking-wider mb-2">{stat.label}</div>
-                                                    <p className="text-xs text-text-secondary">{stat.description}</p>
-                                                </div>
-                                            ))}
-                                        </div>
-                                    </Section>
-
-                                    <Section title="Business Value Proposition" icon={<Wallet size={18} className="text-yellow-500" />}>
-                                        <div className="space-y-3">
-                                            {project.businessModel?.map((model, idx) => (
-                                                <div key={idx} className="flex gap-4 items-start bg-yellow-500/5 p-4 rounded-lg border border-yellow-500/10">
-                                                    <div className="min-w-[120px] font-mono text-xs font-bold text-yellow-600 dark:text-yellow-400 uppercase tracking-tighter mt-1">
-                                                        {model.type}
-                                                    </div>
-                                                    <p className="text-sm text-text-secondary">{model.value}</p>
-                                                </div>
-                                            ))}
-                                        </div>
-                                    </Section>
-                                </motion.div>
-                            )}
-
-                            {activeTab === 'roadmap' && (
-                                <motion.div
-                                    key="roadmap"
-                                    initial={{ opacity: 0, y: 10 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    exit={{ opacity: 0, y: -10 }}
-                                >
-                                    <div className="space-y-6 border-l-2 border-border/50 ml-3 pl-8 py-2">
-                                        {project.timeline?.map((phase, idx) => (
-                                            <div key={idx} className="relative">
-                                                <div className="absolute -left-[41px] top-1 w-5 h-5 rounded-full bg-bg-card border-4 border-accent-blue/50"></div>
-                                                <h4 className="font-bold text-text-primary text-lg">{phase.phase}</h4>
-                                                <span className="text-xs font-mono text-accent-blue mb-3 block">{phase.period}</span>
-                                                <ul className="space-y-2">
-                                                    {phase.activities.map((act, i) => (
-                                                        <li key={i} className="flex items-center gap-2 text-sm text-text-secondary">
-                                                            <div className="w-1.5 h-1.5 rounded-full bg-border"></div>
-                                                            {act}
-                                                        </li>
-                                                    ))}
-                                                </ul>
-                                            </div>
-                                        ))}
                                     </div>
-                                </motion.div>
-                            )}
-
-                            {activeTab === 'risks' && (
-                                <motion.div
-                                    key="risks"
-                                    initial={{ opacity: 0, y: 10 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    exit={{ opacity: 0, y: -10 }}
-                                    className="grid gap-4"
+                                    <h2 className="text-2xl md:text-3xl font-display font-bold text-text-primary mb-2">
+                                        {t.prdTitle}
+                                    </h2>
+                                    <p className="text-text-secondary max-w-2xl leading-relaxed">
+                                        <span className="font-semibold text-text-primary">{t.lblVision}:</span> {project.vision || "N/A"}
+                                    </p>
+                                </div>
+                                <button
+                                    onClick={() => generatePrdPdf(project)}
+                                    className="px-5 py-2.5 rounded-lg bg-text-primary text-bg-primary hover:bg-text-secondary transition-colors flex items-center gap-2 shadow-sm whitespace-nowrap"
                                 >
-                                    {project.mitigationPlans?.map((plan, idx) => (
-                                        <div key={idx} className="bg-bg-primary border border-orange-500/20 p-5 rounded-xl relative overflow-hidden">
-                                            <div className="absolute top-0 right-0 p-3 opacity-10 text-orange-500">
-                                                <ShieldAlert size={64} />
-                                            </div>
-                                            <div className="relative z-10">
-                                                <h4 className="font-bold text-text-primary mb-2 flex items-center gap-2">
-                                                    <span className="text-orange-500">Risk:</span> {plan.risk}
-                                                </h4>
-                                                <p className="text-sm text-text-secondary leading-relaxed">
-                                                    <span className="font-semibold text-green-500">Mitigation: </span>
-                                                    {plan.action}
-                                                </p>
-                                            </div>
+                                    <Download size={16} />
+                                    <span className="font-medium text-sm">{t.download}</span>
+                                </button>
+                            </div>
+
+                            {/* Executive Summary Grid */}
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                <div>
+                                    <div className="text-xs font-mono text-text-muted uppercase mb-1">{t.lblTeam}</div>
+                                    <div className="font-medium text-text-primary">{project.team}</div>
+                                </div>
+                                <div>
+                                    <div className="text-xs font-mono text-text-muted uppercase mb-1">{t.lblTiming}</div>
+                                    <div className="font-medium text-text-primary">
+                                        {project.timeline ? `${project.timeline[0]?.period} - ${project.timeline[project.timeline.length - 1]?.period}` : "TBD"}
+                                    </div>
+                                </div>
+                                <div>
+                                    <div className="text-xs font-mono text-text-muted uppercase mb-1">{t.lblInvestment}</div>
+                                    <div className="font-medium text-text-primary">{project.investmentRequired || "N/A"}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Context & Strategic Fit - Grid Layout */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div className="bg-bg-card border border-border rounded-xl p-6 hover:border-accent-blue/30 transition-colors">
+                            <SectionTitle icon={Target}>{t.lblBackground}</SectionTitle>
+                            <p className="text-text-secondary leading-relaxed text-sm mt-3">
+                                {project.background || project.problem}
+                            </p>
+                        </div>
+                        <div className="bg-bg-card border border-border rounded-xl p-6 hover:border-accent-blue/30 transition-colors">
+                            <SectionTitle icon={Lightbulb}>{t.lblStrategy}</SectionTitle>
+                            <p className="text-text-secondary leading-relaxed text-sm mt-3">
+                                {project.strategicAlignment || "N/A"}
+                            </p>
+                        </div>
+                    </div>
+
+                    {/* Problem / Solution Table (Clean) */}
+                    <div className="bg-bg-card border border-border rounded-xl overflow-hidden">
+                        <div className="p-4 border-b border-border bg-bg-secondary/30">
+                            <SectionTitle icon={AlertTriangle}>{t.lblUseCases}</SectionTitle>
+                        </div>
+                        <div className="divide-y divide-border">
+                            {project.problemMap?.map((pm, i) => (
+                                <div key={i} className="p-4 md:p-6 grid grid-cols-1 md:grid-cols-12 gap-4">
+                                    <div className="md:col-span-4">
+                                        <h4 className="font-bold text-text-primary text-sm mb-1">{pm.problem}</h4>
+                                        <p className="text-xs text-text-muted italic">{pm.context}</p>
+                                    </div>
+                                    <div className="md:col-span-8">
+                                        <div className="flex items-start gap-2">
+                                            <CheckCircle2 size={16} className="text-emerald-500 mt-0.5 shrink-0" />
+                                            <p className="text-sm text-text-secondary leading-relaxed">
+                                                <span className="font-medium text-text-primary">{pm.solution}</span> — {pm.mitigation}
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* Metrics (KPIs) */}
+                    <div className="bg-bg-card border border-border rounded-xl p-6">
+                        <SectionTitle icon={BarChart3}>{t.lblMetrics}</SectionTitle>
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-px bg-border mt-4 border border-border rounded-lg overflow-hidden">
+                            {project.stats?.map((s, i) => (
+                                <div key={i} className="bg-bg-card p-6 text-center hover:bg-bg-secondary/20 transition-colors">
+                                    <div className="text-2xl font-bold text-text-primary mb-1 font-mono">{s.value}</div>
+                                    <div className="text-[10px] font-bold text-text-muted uppercase tracking-wider mb-2">{s.label}</div>
+                                    <div className="text-xs text-text-secondary leading-tight">{s.description}</div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* Detailed Features & Specs */}
+                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        {/* Features List */}
+                        <div className="lg:col-span-2 bg-bg-card border border-border rounded-xl p-6">
+                            <SectionTitle icon={Zap}>{t.lblFeatures}</SectionTitle>
+                            <ul className="mt-4 space-y-4">
+                                {project.coreFeatures?.map((f, i) => (
+                                    <li key={i} className="flex gap-4 items-start group">
+                                        <div className="w-1.5 h-1.5 rounded-full bg-accent-blue mt-2 group-hover:bg-accent-pink transition-colors"></div>
+                                        <div>
+                                            <h4 className="font-bold text-text-primary text-sm">{f.name}</h4>
+                                            <p className="text-sm text-text-secondary mt-1">{f.desc}</p>
+                                        </div>
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
+
+                        {/* Tech Stack / Architecture */}
+                        <div className="bg-bg-card border border-border rounded-xl p-6 flex flex-col gap-6">
+                            <div>
+                                <SectionTitle icon={Layers}>{t.lblArchitecture}</SectionTitle>
+                                <p className="text-sm text-text-primary font-mono mt-3 p-3 bg-bg-secondary/30 rounded border border-border">
+                                    {project.productArchitecture}
+                                </p>
+                            </div>
+
+                            <div className="border-t border-border pt-6">
+                                <SectionTitle icon={ShieldCheck}>{t.lblAssumptions}</SectionTitle>
+                                <p className="text-xs text-text-secondary mt-3 whitespace-pre-line leading-relaxed">
+                                    {project.assumptions}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Design System Footer */}
+                    <div className="bg-gradient-to-r from-bg-card to-bg-secondary/30 border border-border rounded-xl p-6">
+                        <div className="flex flex-col md:flex-row gap-8">
+                            <div className="flex-1">
+                                <SectionTitle icon={PenTool}>{t.lblDesignSys}</SectionTitle>
+                                <p className="text-sm text-text-secondary mt-2">{project.designSystem}</p>
+                            </div>
+                            <div className="flex-1 border-t md:border-t-0 md:border-l border-border pt-4 md:pt-0 md:pl-8">
+                                <div className="text-xs font-bold text-text-muted uppercase mb-3">{t.lblTools} & Methods</div>
+                                <div className="flex flex-wrap gap-2">
+                                    {project.designTools?.map((tool, i) => (
+                                        <div key={i} className="px-2 py-1 bg-bg-primary border border-border rounded text-xs text-text-primary">
+                                            {tool}
                                         </div>
                                     ))}
-                                </motion.div>
-                            )}
-                        </AnimatePresence>
+                                    {project.researchMethods?.map((method, i) => (
+                                        <div key={`res-${i}`} className="px-2 py-1 bg-bg-primary border border-border rounded text-xs text-text-secondary italic">
+                                            {method}
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
                     </div>
+
                 </div>
             </div>
         </motion.div>
     );
 };
 
-// Sub-components for cleaner code
-const TabButton = ({ active, onClick, label }) => (
-    <button
-        onClick={onClick}
-        className={`px-6 py-4 text-sm font-medium transition-all relative whitespace-nowrap
-        ${active ? 'text-accent-blue' : 'text-text-muted hover:text-text-primary hover:bg-bg-secondary/50'}`}
-    >
-        {label}
-        {active && (
-            <motion.div
-                layoutId="activeTabLine"
-                className="absolute bottom-0 left-0 right-0 h-0.5 bg-accent-blue"
-            />
-        )}
-    </button>
-);
-
-const Section = ({ title, icon, children }) => (
-    <div>
-        <h3 className="text-sm font-bold text-text-primary mb-4 flex items-center gap-2 uppercase tracking-wide">
-            {icon}
-            {title}
-        </h3>
+const SectionTitle = ({ icon: Icon, children }) => (
+    <h3 className="text-base font-bold text-text-primary flex items-center gap-2 uppercase tracking-wide">
+        {Icon && <Icon size={16} className="text-text-muted" />}
         {children}
-    </div>
+    </h3>
 );
-
 
 export default ProjectDetail;

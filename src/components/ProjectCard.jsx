@@ -21,17 +21,11 @@ const ProjectCard = ({ id, title, category, description, tags, image, size = 'me
         >
             {image && (
                 <div className={`card-image-container relative overflow-hidden shrink-0 ${isList ? 'h-full w-48' : 'h-48 w-full'} bg-bg-secondary`}>
-                    {/* Blurred Background */}
-                    <div
-                        className="absolute inset-0 bg-cover bg-center blur-xl scale-125 opacity-50 dark:opacity-30"
-                        style={{ backgroundImage: `url(${image})` }}
-                    />
-
-                    {/* Main Image Fitted */}
+                    {/* Main Image Fitted (Cover - Fills area, may crop) */}
                     <img
                         src={image}
                         alt={title}
-                        className="w-full h-full object-contain relative z-10 transition-transform duration-700 group-hover:scale-105"
+                        className="w-full h-full object-cover relative z-10 transition-transform duration-700 group-hover:scale-105"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-bg-card via-transparent to-transparent opacity-90 z-20"></div>
                 </div>

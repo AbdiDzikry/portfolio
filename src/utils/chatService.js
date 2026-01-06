@@ -148,7 +148,7 @@ const simulateAIResponse = (msg) => {
             } else if (lowerMsg.includes('contact') || lowerMsg.includes('email')) {
                 resolve("You can reach me directly via email at sulthanabdi1@gmail.com or connect on LinkedIn!");
             } else if (lowerMsg.includes('who are you')) {
-                resolve("I am the AI assistant for **Sulthan Abdi Dzikry**, a Product Manager and Developer.");
+                resolve("I am the AI assistant for **Sulthan Abdi Dzikry**, a Product Designer and Developer.");
             } else {
                 resolve("That's an interesting question! While I don't have a specific answer in my database, I'd suggest checking the 'About' section or contacting me directly.");
             }

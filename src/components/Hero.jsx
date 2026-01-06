@@ -81,7 +81,7 @@ const Hero = () => {
                         </h1>
 
                         <p className="text-text-secondary text-lg max-w-lg leading-relaxed relative pl-4 border-l-2 border-stone-500/30">
-                            Product Manager architecting digital ecosystems. Merging <span className="text-stone-500 font-medium">data-logic</span> with <span className="text-accent-green font-medium">human-centric</span> design.
+                            Product Designer architecting digital ecosystems. Merging <span className="text-stone-500 font-medium">data-logic</span> with <span className="text-accent-green font-medium">human-centric</span> design.
                         </p>
                     </div>
 

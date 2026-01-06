@@ -72,7 +72,12 @@ const DashboardTechno = () => {
                             </p>
 
                             <div className="flex flex-wrap justify-center md:justify-start gap-2">
-                                <a href="mailto:sulthanabdi1@gmail.com" target="_blank" rel="noopener noreferrer" className="px-4 py-2 bg-accent-green text-white rounded-sm text-xs font-bold hover:bg-opacity-80 transition-colors uppercase tracking-wider">
+                                <a
+                                    href="https://mail.google.com/mail/u/0/?view=cm&fs=1&to=sulthanabdi1@gmail.com&su=Job%20Opportunity%20from%20Portfolio&body=Hi%20Sulthan%2C%0A%0AI%20reviewed%20your%20portfolio%20and%20I'm%20impressed%20with%20your%20work.%20I'd%20like%20to%20discuss%20a%20potential%20job%20opportunity%20with%20you.%0A%0APlease%20let%20me%20know%20your%20availability.%0A%0ABest%20regards%2C%0A%5BName%5D"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="px-4 py-2 bg-accent-green text-white rounded-sm text-xs font-bold hover:bg-opacity-80 transition-colors uppercase tracking-wider"
+                                >
                                     Email_Me
                                 </a>
                                 <a href="https://www.linkedin.com/in/sulthan-abdi-dzikry/" target="_blank" rel="noopener noreferrer" className="px-4 py-2 border border-stone-600 text-stone-300 rounded-sm text-xs font-medium hover:border-accent-green hover:text-accent-green transition-colors flex items-center gap-2 uppercase tracking-wider bg-black/50">
