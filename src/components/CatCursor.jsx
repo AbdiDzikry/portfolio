@@ -16,7 +16,7 @@ const CatCursor = () => {
 
             // Add new position to trail
             setTrail(prev => {
-                const newTrail = [...prev, { x: e.clientX, y: e.clientY, id: Date.now() }];
+                const newTrail = [...prev, { x: e.clientX, y: e.clientY, id: `${Date.now()}-${Math.random()}` }];
                 return newTrail.slice(-12); // Keep last 12 positions
             });
 
