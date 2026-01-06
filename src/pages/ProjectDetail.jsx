@@ -10,6 +10,7 @@ import { projectsData } from '../data/projects';
 import { useLanguage } from '../context/LanguageContext';
 import { translations } from '../utils/translations';
 import { generatePrdPdf } from '../utils/generatePrdPdf';
+import SEO from '../components/SEO';
 
 const ProjectDetail = () => {
     const { id } = useParams();
@@ -72,6 +73,11 @@ const ProjectDetail = () => {
             exit={{ opacity: 0 }}
             className="bg-bg-primary min-h-screen pt-32 pb-20 px-6 md:px-12 lg:px-20 transition-colors duration-300"
         >
+            <SEO
+                title={project.title}
+                description={project.description}
+                ogImage={project.image}
+            />
             <div className="max-w-5xl mx-auto">
                 <Link to="/projects" className="inline-flex items-center gap-2 text-text-muted hover:text-accent-blue transition-colors mb-8 group">
                     <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform" />

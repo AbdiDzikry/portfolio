@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
+import { HelmetProvider } from 'react-helmet-async';
 import { ThemeProvider } from './context/ThemeContext';
 import { LanguageProvider } from './context/LanguageContext';
 import NavbarVertical from './components/NavbarVertical';
@@ -12,6 +13,7 @@ import Projects from './pages/Projects';
 import ProjectDetail from './pages/ProjectDetail';
 import CaseStudies from './pages/CaseStudies';
 import Lab from './pages/Lab';
+import CatCursor from './components/CatCursor';
 
 function AppContent() {
   const location = useLocation();
@@ -19,7 +21,8 @@ function AppContent() {
   const [isChatOpen, setIsChatOpen] = useState(false);
 
   return (
-    <div className={`${isStoneBg ? 'bg-stone-200' : 'bg-white'} dark:bg-bg-primary min-h-screen text-text-primary transition-colors duration-300 font-sans flex flex-col md:pr-28 relative`}>
+    <div className={`${isStoneBg ? 'bg-stone-200' : 'bg-white'} dark:bg-bg-primary min-h-screen text-text-primary transition-colors duration-300 font-sans flex flex-col md:pr-28 relative cursor-none`}>
+      <CatCursor />
       <div className="md:hidden">
         <Navbar />
       </div>
@@ -42,13 +45,15 @@ function AppContent() {
 
 function App() {
   return (
-    <LanguageProvider>
-      <ThemeProvider>
-        <Router>
-          <AppContent />
-        </Router>
-      </ThemeProvider>
-    </LanguageProvider>
+    <HelmetProvider>
+      <LanguageProvider>
+        <ThemeProvider>
+          <Router>
+            <AppContent />
+          </Router>
+        </ThemeProvider>
+      </LanguageProvider>
+    </HelmetProvider>
   );
 }
 

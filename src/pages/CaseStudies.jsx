@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import './CaseStudies.css';
+import SEO from '../components/SEO';
 
 const studies = [
     {
@@ -41,6 +42,10 @@ const CaseStudies = () => {
 
     return (
         <div className="container mx-auto px-6 md:px-12 lg:px-16 pt-10 min-h-screen flex flex-col">
+            <SEO
+                title="Ideas & Case Studies"
+                description="Creative concepts, life philosophies, and experimental projects by Sulthan Abdi Dzikry."
+            />
             <header className="page-header text-center md:translate-x-14">
                 <h1 className="page-title">Ideas</h1>
                 <p className="page-subtitle">Creative concepts, life philosophies, and experimental projects.</p>

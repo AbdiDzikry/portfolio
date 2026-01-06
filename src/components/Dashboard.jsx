@@ -3,6 +3,8 @@ import { motion } from 'framer-motion';
 import { Linkedin, Workflow, Building2, Mail, Download } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { translations } from '../utils/translations';
+import NowPlayingWidget from './NowPlayingWidget';
+import GitHubWidget from './GitHubWidget';
 
 const Dashboard = () => {
     const { language } = useLanguage();
@@ -233,6 +235,16 @@ const Dashboard = () => {
                         </div>
                     </FeatureCard>
 
+                    {/* WIDGETS ROW */}
+                    {/* Now Playing Widget (1 col) */}
+                    <div className="col-span-1">
+                        <NowPlayingWidget username="testis3131" />
+                    </div>
+
+                    {/* GitHub Widget (1 col) */}
+                    <div className="col-span-1">
+                        <GitHubWidget username="AbdiDzikry" />
+                    </div>
 
                 </div>
             </div>
